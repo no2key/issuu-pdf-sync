@@ -28,6 +28,9 @@ define( 'IPU_VERSION', '1.0' );
 define( 'IPU_URL', plugins_url( '', __FILE__ ) );
 define( 'IPU_DIR', dirname( __FILE__ ) );
 
+define( 'IPU_API_KEY', "1gsyl7vk63qpwzuu7pzuyo5p7f8h80h8" );
+define( 'IPU_SECRET_KEY', "42h72g5f3ckqkj8yisho80sxlt6v93tz" );
+
 require( IPU_DIR . '/inc/functions.tpl.php');
 require( IPU_DIR . '/inc/class.client.php');
 require( IPU_DIR . '/inc/class.admin.php');
@@ -44,7 +47,7 @@ function IPU_Init() {
 	$ipu['client'] = new IPU_Client();
 	
 	// Admin
-	if ( is_admin() )
+	//if ( is_admin() )
 		$ipu['admin'] = new IPU_Admin();
 }
 add_action( 'plugins_loaded', 'IPU_Init' );
