@@ -8,26 +8,22 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function IPU_Admin() {
-		
 		global $pagenow;
 		
 		add_filter("attachment_fields_to_edit", array(&$this, "insertIPUButton"), 10, 2);
 		add_filter("media_send_to_editor", array(&$this, "sendToEditor"));
 		
-		// ADD the admin options page
-		add_action( 'admin_menu', array( &$this, 'IPU_plugin_menu' ) );
-		
-		wp_enqueue_script( 'jquery' );
-		
 		if ( $pagenow == "media.php" )
 			add_action("admin_head", array(&$this, "editMediaJs"), 50 );
-			//wp_enqueue_script( 'ipu_admin', IPU_URL . '/js/ipu_admin.js', 'jquery' );
-
+		add_action( 'admin_init', array( &$this, 'checkJsPdfEdition' ) );
+		add_action( 'admin_menu', array( &$this, 'addPluginMenu' ) );
+		
+		wp_enqueue_script( 'jquery' );
 	}
 	
 	
-	function IPU_plugin_menu() {
-		add_options_page( __('Options for Issuu PDF Uploader', 'ipu'), __('Issuu PDF Uploader', 'ipu'), 'manage_options', 'ipu-options', array( &$this, 'display_IPU_options' ) );
+	function addPluginMenu() {
+		add_options_page( __('Options for Issuu PDF Uploader', 'ipu'), __('Issuu PDF Uploader', 'ipu'), 'manage_options', 'ipu-options', array( &$this, 'displayOptions' ) );
 	}
 	
 	/**
@@ -36,8 +32,7 @@ class IPU_Admin {
 	 * @echo the form 
 	 * @author Benjamin Niess
 	 */
-	function display_IPU_options() {
-	
+	function displayOptions() {
 		if ( isset($_POST['save']) ) {
 			$new_options = array();
 			
@@ -107,8 +102,14 @@ class IPU_Admin {
 		<?php
 	}
 	
+	/*
+	 * Send a WordPress PDF to Issuu webservice
+	 * 
+	 * @param $post_id the WP post id
+	 * @return string the issuu document id | false 
+	 * @author Benjamin Niess
+	 */
 	function sendPDFToIssuu( $post_id = 0 ){
-		
 		if ( (int)$post_id == 0 )
 			return false;
 		
@@ -120,10 +121,10 @@ class IPU_Admin {
 			return false;
 		
 		// Prepare the MD5 signature for the Issuu Webservice
-		$md5_signature = md5( IPU_SECRET_KEY . "actionissuu.document.url_uploadapiKey" . IPU_API_KEY . "formatjsonslurpUrl" . $post_data->guid . "title" . $post_data->post_title );
+		$md5_signature = md5( IPU_SECRET_KEY . "actionissuu.document.url_uploadapiKey" . IPU_API_KEY . "formatjsonslurpUrl" . $post_data->guid . "title" . sanitize_title( $post_data->post_title ) );
 		
 		// Call the Webservice
-		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . IPU_API_KEY . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . $post_data->post_title . "&signature=" . $md5_signature; 
+		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . IPU_API_KEY . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . sanitize_title( $post_data->post_title ) . "&signature=" . $md5_signature; 
 		
 		// Cath the response
 		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
@@ -149,8 +150,62 @@ class IPU_Admin {
 		
 		// Update the attachment post meta with the Issuu PDF ID
 		update_post_meta( $post_id, 'issuu_pdf_id', $response->rsp->_content->document->documentId );
+		update_post_meta( $post_id, 'issuu_pdf_name', $response->rsp->_content->document->name );
 		
 		return $response->rsp->_content->document->documentId;
+	}
+	
+	/*
+	 * Delete an Issuu PDF from Issuu webservice
+	 * 
+	 * @param $post_id the WP post id
+	 * @return true | false 
+	 * @author Benjamin Niess
+	 */
+	function deletePDFFromIssuu( $post_id = 0 ){
+		if ( (int)$post_id == 0 )
+			return false;
+		
+		// Get attachment infos
+		$post_data = get_post( $post_id );
+		
+		// Check if the attachment exists and is a PDF file
+		if ( !isset( $post_data->post_mime_type ) || $post_data->post_mime_type != "application/pdf" || !isset( $post_data->guid ) || empty ( $post_data->guid ) )
+			return false;
+		
+		$issuu_pdf_name = get_post_meta( $post_id, 'issuu_pdf_name', true );
+		if ( empty( $issuu_pdf_name ) )
+			return false;
+		
+		// Prepare the MD5 signature for the Issuu Webservice
+		$md5_signature = md5( IPU_SECRET_KEY . "actionissuu.document.deleteapiKey" . IPU_API_KEY . "formatjsonnames" . $issuu_pdf_name );
+		
+		// Call the Webservice
+		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.delete&apiKey=" . IPU_API_KEY . "&format=json&names=" . $issuu_pdf_name . "&signature=" . $md5_signature; 
+		
+		// Cath the response
+		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
+		
+		// Check if no sever error
+		if( is_wp_error($response) || isset($response->errors) || $response == null ) {
+			return false;
+		}
+		// Decode the Json
+		$response = json_decode( $response['body'] );
+		
+		if ( empty( $response) )
+			return false;
+			
+		// Check stat of the action
+		if ( $response->rsp->stat == "fail" )
+			return false;
+		
+		// Update the attachment post meta with the Issuu PDF ID
+		delete_post_meta( $post_id, 'issuu_pdf_id' );
+		delete_post_meta( $post_id, 'issuu_pdf_name' );
+		update_post_meta( $post_id, 'disable_auto_upload', 1 );
+
+		return true;
 	}
 
 	/**
@@ -160,7 +215,6 @@ class IPU_Admin {
 	 * @param $post Object
 	 */
 	function insertIPUButton( $form_fields, $post ) {
-		
 		global $wp_version, $ipu_options;
 		
 		if ( !isset( $form_fields ) || empty( $form_fields ) || !isset( $post ) || empty( $post ) )
@@ -174,9 +228,10 @@ class IPU_Admin {
 		
 		// Check on post meta if the PDF has already been uploaded on Issuu
 		$issuu_pdf_id = get_post_meta( $post->ID, 'issuu_pdf_id', true );
+		$disable_auto_upload = get_post_meta( $post->ID, 'disable_auto_upload', true );
 		
 		// Upload the PDF to Issuu if necessary and if the Auto upload feature is enabled
-		if ( empty( $issuu_pdf_id ) && isset( $ipu_options['auto_upload'] ) && $ipu_options['auto_upload'] == 1 )
+		if ( empty( $issuu_pdf_id ) && isset( $ipu_options['auto_upload'] ) && $ipu_options['auto_upload'] == 1 && $disable_auto_upload != 1)
 			$issuu_pdf_id = $this->sendPDFToIssuu( $post->ID );
 		
 		if ( empty( $issuu_pdf_id ) )
@@ -205,14 +260,38 @@ class IPU_Admin {
 		return $html;
 	}
 	
-	function editMediaJs(){
+	/*
+	 * Check if an action is set on the $_GET var and call the PHP function corresponding 
+	 * @author Benjamin Niess
+	 */
+	function checkJsPdfEdition(){
+		if ( !isset( $_GET['attachment_id'] ) || (int)$_GET['attachment_id'] == 0 || !isset( $_GET['action'] ) || empty( $_GET['action'] ) )
+			return false;
 		
-		if ( !isset( $_GET['attachment_id'] ) && (int)$_GET['attachment_id'] != 0 )
+		if ( $_GET['action'] == 'send_pdf' ){
+			die( $this->sendPDFToIssuu( $_GET['attachment_id'] ) );
+		} elseif ( $_GET['action'] == 'delete_pdf' ){
+			die( $this->deletePDFFromIssuu( $_GET['attachment_id'] ) );
+		}
+	}
+	
+	/*
+	 * Print some JS code for the media.php page (for PDFs only)
+	 * @author Benjamin Niess
+	 */
+	function editMediaJs(){
+		if ( !isset( $_GET['attachment_id'] ) || (int)$_GET['attachment_id'] <= 0 )
+			return false;
+			
+		// Get attachment infos
+		$post_data = get_post( $_GET['attachment_id'] );
+		
+		// Check if the attachment exists and is a PDF file
+		if ( !isset( $post_data->post_mime_type ) || $post_data->post_mime_type != "application/pdf" || !isset( $post_data->guid ) || empty ( $post_data->guid ) )
 			return false;
 		
 		// Check on post meta if the PDF has already been uploaded on Issuu
 		$issuu_pdf_id = get_post_meta( $_GET['attachment_id'], 'issuu_pdf_id', true );
-		
 		
 		?>
 		<script type="text/javascript">
@@ -220,11 +299,49 @@ class IPU_Admin {
 				
 				jQuery('#media-single-form .slidetoggle tbody tr').last().after('<tr class="reload_pdf"><th valign="top" scope="row" class="label"><label><span class="alignleft"><?php _e( 'Issuu status', 'ipu' ); ?></span><br class="clear"></label></th><td class="field"><?php 
 					if ( !empty( $issuu_pdf_id ) ) : 
-						?><p style="color:#00AA00;"><?php _e( 'This PDF is already synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to delete this PDF from Issuu', 'ipu' ); ?></a></p><?php 
+						?><p style="color:#00AA00;" id="admin_delete_pdf"><?php _e( 'This PDF is already synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to delete this PDF from Issuu', 'ipu' ); ?></a></p><?php 
 					else : 
-						?><p style="color:#AA0000;"><?php _e( 'This PDF is not synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to send this PDF to Issuu', 'ipu' ); ?></a></p><?php 
+						?><p style="color:#AA0000;" id="admin_send_pdf"><?php _e( 'This PDF is not synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to send this PDF to Issuu', 'ipu' ); ?></a></p><?php 
 					endif; 
 				?></td></tr>');
+				
+				// Sending PDF
+				jQuery('#admin_send_pdf a').click(function( e ) {
+					jQuery('#admin_send_pdf').html('<?php _e( 'Loading', 'ipu' ); ?>...');
+					jQuery('#admin_send_pdf').css( 'color', '#000000');
+					jQuery.get('<?php echo admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&action=send_pdf' ); ?>', function(data) {
+						
+						if ( data == false ){
+							jQuery('#admin_send_pdf').html('<?php _e( 'An error occured during synchronisation with Issuu', 'ipu' ); ?>');
+							jQuery('#admin_send_pdf').css( 'color', '#AA0000');
+						}else {
+							jQuery('#admin_send_pdf').html('<?php _e( 'Your PDF is now on Issuu !', 'ipu' ); ?>');
+							jQuery('#admin_send_pdf').css( 'color', '#00AA00');
+						};
+					});
+					e.preventDefault();
+					
+					
+				});
+				
+				// Deleting PDF
+				jQuery('#admin_delete_pdf a').click(function( e ) {
+					jQuery('#admin_delete_pdf').html('<?php _e( 'Loading', 'ipu' ); ?>...');
+					jQuery('#admin_delete_pdf').css( 'color', '#000000');
+					jQuery.get('<?php echo admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&action=delete_pdf' ); ?>', function(data) {
+						
+						if ( data == true ){
+							jQuery('#admin_delete_pdf').html('<?php _e( 'Your PDF has been successfuly deleted', 'ipu' ); ?>');
+							jQuery('#admin_delete_pdf').css( 'color', '#00AA00');
+						}else {
+							jQuery('#admin_delete_pdf').html('<?php _e( 'An error occured during PDF deletion', 'ipu' ); ?>');
+							jQuery('#admin_delete_pdf').css( 'color', '#AA0000');
+						};
+					});
+					e.preventDefault();
+					
+				});
+
 			});
 		</script>
 		<?php

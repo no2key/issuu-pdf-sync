@@ -3,7 +3,7 @@
 Plugin Name: Issuu PDF Uploader
 Plugin URI: http://www.beapi.fr
 Description: Synchronize WordPress and the Issuu PDF upload service
-Version: 1.0
+Version: 1.1
 Author: Benjamin Niess
 Author URI: http://www.benjamin-niess.fr
 Text Domain: ipu
@@ -24,7 +24,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-define( 'IPU_VERSION', '1.0' );
+define( 'IPU_VERSION', '1.1' );
 define( 'IPU_URL', plugins_url( '', __FILE__ ) );
 define( 'IPU_DIR', dirname( __FILE__ ) );
 
@@ -34,8 +34,11 @@ define( 'IPU_SECRET_KEY', "42h72g5f3ckqkj8yisho80sxlt6v93tz" );
 require( IPU_DIR . '/inc/functions.tpl.php');
 require( IPU_DIR . '/inc/functions.plugin.php');
 require( IPU_DIR . '/inc/class.client.php');
-require( IPU_DIR . '/inc/class.admin.php');
 require( IPU_DIR . '/inc/shortcodes.php');
+
+if ( is_admin() )
+	require( IPU_DIR . '/inc/class.admin.php');
+
 
 // Activate Recommend a friend
 register_activation_hook  ( __FILE__, 'IPU_Install' );
