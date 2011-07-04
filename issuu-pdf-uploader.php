@@ -54,7 +54,7 @@ function IPU_Init() {
 	$ipu['client'] = new IPU_Client();
 	
 	// Admin
-	//if ( is_admin() )
+	if ( is_admin() )
 		$ipu['admin'] = new IPU_Admin();
 }
 add_action( 'plugins_loaded', 'IPU_Init' );

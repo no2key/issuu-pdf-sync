@@ -21,11 +21,10 @@ Stable tag: 1.0
 	* First release
 
 == Todo ==
-- Panneau d'admin (personalisation du shortcode, api keyS)
+
 - modifier l'admin des medias pour pouvoir regénérer le pdf
-- Synchronisation auto lors de l'upload de PDF
-- Modification du bouton "insérer dans l'article" et utilisation d'un shortcode pour insérer PDF Issuu dans l'rticle
 - Boucle sur the content pour remplacer fichiers.pdf par liens vers issuu
-- revoir code embed (shortcode)
-- cocher par défaut les options full screen et auto add
-- ajouter titre du pdf dans le shortcode en js en temps réel 
+- Mise à jour du pdf sur Issuu au save post des pdf
+- Ajout d'options dans la page d'options (toutes les options du lecteur pdf)
+- Ajout d'options dans le shortcode
+- Allowfullscreen marche pas

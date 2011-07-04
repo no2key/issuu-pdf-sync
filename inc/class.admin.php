@@ -8,13 +8,23 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function IPU_Admin() {
+		
+		global $pagenow;
+		
 		add_filter("attachment_fields_to_edit", array(&$this, "insertIPUButton"), 10, 2);
 		add_filter("media_send_to_editor", array(&$this, "sendToEditor"));
 		
 		// ADD the admin options page
 		add_action( 'admin_menu', array( &$this, 'IPU_plugin_menu' ) );
+		
+		wp_enqueue_script( 'jquery' );
+		
+		if ( $pagenow == "media.php" )
+			add_action("admin_head", array(&$this, "editMediaJs"), 50 );
+			//wp_enqueue_script( 'ipu_admin', IPU_URL . '/js/ipu_admin.js', 'jquery' );
 
 	}
+	
 	
 	function IPU_plugin_menu() {
 		add_options_page( __('Options for Issuu PDF Uploader', 'ipu'), __('Issuu PDF Uploader', 'ipu'), 'manage_options', 'ipu-options', array( &$this, 'display_IPU_options' ) );
@@ -116,17 +126,20 @@ class IPU_Admin {
 		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . IPU_API_KEY . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . $post_data->post_title . "&signature=" . $md5_signature; 
 		
 		// Cath the response
-		$reponse = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
+		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
 		
 		// Check if no sever error
-		if( is_wp_error($response) || isset($reponse->errors) || $reponse == null ) {
+		if( is_wp_error($response) || isset($response->errors) || $response == null ) {
 			return false;
 		}
-		
 		// Decode the Json
-		$response = json_decode( $reponse['body'] );
+		$response = json_decode( $response['body'] );
 		
+		if ( empty( $response) )
+			return false;
+			
 		// Check stat of the action
+		
 		if ( $response->rsp->stat == "fail" )
 			return false;
 		
@@ -190,6 +203,31 @@ class IPU_Admin {
 			}
 		}
 		return $html;
+	}
+	
+	function editMediaJs(){
+		
+		if ( !isset( $_GET['attachment_id'] ) && (int)$_GET['attachment_id'] != 0 )
+			return false;
+		
+		// Check on post meta if the PDF has already been uploaded on Issuu
+		$issuu_pdf_id = get_post_meta( $_GET['attachment_id'], 'issuu_pdf_id', true );
+		
+		
+		?>
+		<script type="text/javascript">
+			jQuery(function() {
+				
+				jQuery('#media-single-form .slidetoggle tbody tr').last().after('<tr class="reload_pdf"><th valign="top" scope="row" class="label"><label><span class="alignleft"><?php _e( 'Issuu status', 'ipu' ); ?></span><br class="clear"></label></th><td class="field"><?php 
+					if ( !empty( $issuu_pdf_id ) ) : 
+						?><p style="color:#00AA00;"><?php _e( 'This PDF is already synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to delete this PDF from Issuu', 'ipu' ); ?></a></p><?php 
+					else : 
+						?><p style="color:#AA0000;"><?php _e( 'This PDF is not synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to send this PDF to Issuu', 'ipu' ); ?></a></p><?php 
+					endif; 
+				?></td></tr>');
+			});
+		</script>
+		<?php
 	}
 }
 ?>
