@@ -78,6 +78,14 @@ class IPU_Admin {
 					<tr><td colspan="2"><h3><?php _e('Default embed code configuration', 'ipu'); ?></h3></td></tr> 
 					
 					<tr valign="top">
+						<th scope="row"><?php _e('Layout', 'ipu'); ?></th>
+						<td>
+							<input type="radio" name="ipu[layout]" value="1" <?php checked( isset( $fields['layout'] ) ? $fields['layout'] : 0 , 1 ); ?> /> <?php _e('Two up', 'ipu'); ?>
+							<input type="radio" name="ipu[layout]" value="2" <?php checked( isset( $fields['layout'] ) ? $fields['layout'] : 0 , 2 ); ?> /> <?php _e('Single page', 'ipu'); ?>
+						</td>
+					</tr>
+					
+					<tr valign="top">
 						<th scope="row"><?php _e('Width', 'ipu'); ?></th>
 						<td><input type="text" name="ipu[width]" value="<?php echo isset(  $fields['width'] ) ? $fields['width'] : ''; ?>" /></td>
 					</tr>
@@ -88,8 +96,25 @@ class IPU_Admin {
 					</tr>
 					
 					<tr valign="top">
+						<th scope="row"><?php _e('Background color', 'ipu'); ?></th>
+						<td># <input type="text" name="ipu[bgcolor]" value="<?php echo isset(  $fields['bgcolor'] ) ? $fields['bgcolor'] : ''; ?>" /></td>
+					</tr>
+					
+					<tr valign="top">
 						<th scope="row"><?php _e('Allow full screen', 'ipu'); ?></th>
 						<td><input type="checkbox" <?php checked( isset( $fields['allow_full_screen'] ) ? $fields['allow_full_screen'] : '' , 1 ); ?> name="ipu[allow_full_screen]" value="1" /></td>
+					</tr>
+					
+					<tr valign="top">
+						<th scope="row"><?php _e('Always show flip buttons', 'ipu'); ?></th>
+						<td><input type="checkbox" <?php checked( isset( $fields['show_flip_buttons'] ) ? $fields['show_flip_buttons'] : '' , 1 ); ?> name="ipu[show_flip_buttons]" value="1" /></td>
+					</tr>
+					
+					<tr valign="top">
+						<th scope="row"><?php _e('Auto flip (every 6 seconds)', 'ipu'); ?></th>
+						<td>
+							<input type="checkbox" name="ipu[autoflip]" value="1" <?php checked( isset( $fields['autoflip'] ) ? $fields['autoflip'] : 0 , 1 ); ?> />
+						</td>
 					</tr>
 					
 				</table>
@@ -110,7 +135,12 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function sendPDFToIssuu( $post_id = 0 ){
+		global $ipu_options;
+		
 		if ( (int)$post_id == 0 )
+			return false;
+		
+		if ( $this->hasApiKeys() == false )
 			return false;
 		
 		// Get attachment infos
@@ -121,10 +151,10 @@ class IPU_Admin {
 			return false;
 		
 		// Prepare the MD5 signature for the Issuu Webservice
-		$md5_signature = md5( IPU_SECRET_KEY . "actionissuu.document.url_uploadapiKey" . IPU_API_KEY . "formatjsonslurpUrl" . $post_data->guid . "title" . sanitize_title( $post_data->post_title ) );
+		$md5_signature = md5( $ipu_options['issuu_secret_key'] . "actionissuu.document.url_uploadapiKey" . $ipu_options['issuu_api_key'] . "formatjsonslurpUrl" . $post_data->guid . "title" . sanitize_title( $post_data->post_title ) );
 		
 		// Call the Webservice
-		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . IPU_API_KEY . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . sanitize_title( $post_data->post_title ) . "&signature=" . $md5_signature; 
+		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . $ipu_options['issuu_api_key'] . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . sanitize_title( $post_data->post_title ) . "&signature=" . $md5_signature; 
 		
 		// Cath the response
 		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
@@ -154,6 +184,7 @@ class IPU_Admin {
 		
 		return $response->rsp->_content->document->documentId;
 	}
+
 	
 	/*
 	 * Delete an Issuu PDF from Issuu webservice
@@ -178,10 +209,10 @@ class IPU_Admin {
 			return false;
 		
 		// Prepare the MD5 signature for the Issuu Webservice
-		$md5_signature = md5( IPU_SECRET_KEY . "actionissuu.document.deleteapiKey" . IPU_API_KEY . "formatjsonnames" . $issuu_pdf_name );
+		$md5_signature = md5( $ipu_options['issuu_secret_key'] . "actionissuu.document.deleteapiKey" . $ipu_options['issuu_api_key'] . "formatjsonnames" . $issuu_pdf_name );
 		
 		// Call the Webservice
-		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.delete&apiKey=" . IPU_API_KEY . "&format=json&names=" . $issuu_pdf_name . "&signature=" . $md5_signature; 
+		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.delete&apiKey=" . $ipu_options['issuu_api_key'] . "&format=json&names=" . $issuu_pdf_name . "&signature=" . $md5_signature; 
 		
 		// Cath the response
 		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
@@ -244,6 +275,15 @@ class IPU_Admin {
 		</script>\n";
 		
 		return $form_fields;
+	}
+
+	function hasApiKeys(){
+		global $ipu_options;
+		
+		if ( !isset( $ipu_options['issuu_api_key'] ) || empty( $ipu_options['issuu_api_key'] ) || !isset( $ipu_options['issuu_secret_key'] ) || empty( $ipu_options['issuu_secret_key'] ) )
+			return false;
+		
+		return true;
 	}
 
 	/**
