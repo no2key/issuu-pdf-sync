@@ -270,7 +270,7 @@ class IPU_Admin {
 		if ( empty( $issuu_pdf_id ) )
 			return $form_fields;
 		
-		$form_fields["url"]["html"] .= "<button type='button' class='button urlissuupdfuploader issuu-pdf-" . $issuu_pdf_id . "' value='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]' title='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]'>Issuu PDF</button>";
+		$form_fields["url"]["html"] .= "<button type='button' class='button urlissuupdfuploader issuu-pdf-" . $issuu_pdf_id . "' value='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]' title='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]'>" . _( 'Issuu PDF' ) . "</button>";
 		
 		$form_fields["url"]["html"] .= "<script type='text/javascript'>
 		jQuery('issuu-pdf-" . $issuu_pdf_id . "').bind('click', function(){jQuery(this).siblings('input').val(this.value);});
@@ -354,11 +354,11 @@ class IPU_Admin {
 		<script type="text/javascript">
 			jQuery(function() {
 				
-				jQuery('#media-single-form .slidetoggle tbody tr').last().after('<tr class="reload_pdf"><th valign="top" scope="row" class="label"><label><span class="alignleft"><?php _e( 'Issuu status', 'ipu' ); ?></span><br class="clear"></label></th><td class="field"><?php 
+				jQuery('#media-single-form .slidetoggle tbody tr').last().after('<tr class="reload_pdf"><th valign="top" scope="row" class="label"><label><span class="alignleft"><?php esc_attr_e( 'Issuu status', 'ipu' ); ?></span><br class="clear"></label></th><td class="field"><?php 
 					if ( !empty( $issuu_pdf_id ) ) : 
-						?><p style="color:#00AA00;" id="admin_delete_pdf"><?php _e( 'This PDF is already synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to delete this PDF from Issuu', 'ipu' ); ?></a></p><?php 
+						?><p style="color:#00AA00;" id="admin_delete_pdf"><?php esc_attr_e( 'This PDF is already synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php esc_attr_e( '> Click here to delete this PDF from Issuu', 'ipu' ); ?></a></p><?php 
 					else : 
-						?><p style="color:#AA0000;" id="admin_send_pdf"><?php _e( 'This PDF is not synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php _e( '> Click here to send this PDF to Issuu', 'ipu' ); ?></a></p><?php 
+						?><p style="color:#AA0000;" id="admin_send_pdf"><?php esc_attr_e( 'This PDF is not synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php esc_attr_e( '> Click here to send this PDF to Issuu', 'ipu' ); ?></a></p><?php 
 					endif; 
 				?></td></tr>');
 				
@@ -369,29 +369,28 @@ class IPU_Admin {
 					jQuery.get('<?php echo str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&amp;action=send_pdf' ), 'issuu_send_' . $_GET['attachment_id'] ) ); ?>', function(data) {
 						
 						if ( data == false ){
-							jQuery('#admin_send_pdf').html('<?php _e( 'An error occured during synchronisation with Issuu', 'ipu' ); ?>');
+							jQuery('#admin_send_pdf').html('<?php esc_attr_e( 'An error occured during synchronisation with Issuu', 'ipu' ); ?>');
 							jQuery('#admin_send_pdf').css( 'color', '#AA0000');
 						}else {
-							jQuery('#admin_send_pdf').html('<?php _e( 'Your PDF is now on Issuu !', 'ipu' ); ?>');
+							jQuery('#admin_send_pdf').html('<?php esc_attr_e( 'Your PDF is now on Issuu !', 'ipu' ); ?>');
 							jQuery('#admin_send_pdf').css( 'color', '#00AA00');
 						};
 					});
 					e.preventDefault();
 					
-					
 				});
 				
 				// Deleting PDF
 				jQuery('#admin_delete_pdf a').click(function( e ) {
-					jQuery('#admin_delete_pdf').html('<?php _e( 'Loading', 'ipu' ); ?>...');
+					jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'Loading', 'ipu' ); ?>...');
 					jQuery('#admin_delete_pdf').css( 'color', '#000000');
 					jQuery.get('<?php echo str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&amp;action=delete_pdf' ), 'issuu_delete_' . $_GET['attachment_id'] ) ); ?>', function(data) {
 						
 						if ( data == true ){
-							jQuery('#admin_delete_pdf').html('<?php _e( 'Your PDF has been successfuly deleted', 'ipu' ); ?>');
+							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'Your PDF has been successfuly deleted', 'ipu' ); ?>');
 							jQuery('#admin_delete_pdf').css( 'color', '#00AA00');
 						}else {
-							jQuery('#admin_delete_pdf').html('<?php _e( 'An error occured during PDF deletion', 'ipu' ); ?>');
+							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'An error occured during PDF deletion', 'ipu' ); ?>');
 							jQuery('#admin_delete_pdf').css( 'color', '#AA0000');
 						};
 					});

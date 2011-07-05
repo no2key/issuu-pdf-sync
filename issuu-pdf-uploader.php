@@ -48,8 +48,8 @@ function IPU_Init() {
 	global $ipu, $ipu_options;
 	
 	// Load up the localization file if we're using WordPress in a different language
-	// Place it in this plugin's "lang" folder and name it "IPU-[value in wp-config].mo"
-	load_plugin_textdomain( 'IPU', false, basename(rtrim(dirname(__FILE__), '/')) . '/languages' );
+	// Place it in this plugin's "lang" folder and name it "ipu-[value in wp-config].mo"
+	load_plugin_textdomain( 'ipu', false, basename(rtrim(dirname(__FILE__), '/')) . '/languages' );
 	
 	$ipu_options = get_option ( 'ipu_options' );
 	
