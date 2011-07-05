@@ -26,3 +26,4 @@ Stable tag: 1.0
 - Mise à jour du pdf sur Issuu au save post des pdf
 - Ajout d'options dans la page d'options (toutes les options du lecteur pdf)
 - Ajout d'options dans le shortcode
+- Sécurité

@@ -67,7 +67,7 @@ class IPU_Admin {
 					</tr>
 					<tr valign="top">
 						<th scope="row"><?php _e('Issuu private key', 'ipu'); ?></th>
-						<td><input type="text" name="ipu[issuu_private_key]" value="<?php echo isset( $fields['issuu_private_key'] ) ? $fields['issuu_private_key'] : ''; ?>" /></td>
+						<td><input type="text" name="ipu[issuu_secret_key]" value="<?php echo isset( $fields['issuu_secret_key'] ) ? $fields['issuu_secret_key'] : ''; ?>" /></td>
 					</tr>
 					
 					<tr valign="top">
@@ -194,6 +194,8 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function deletePDFFromIssuu( $post_id = 0 ){
+		global $ipu_options;
+		
 		if ( (int)$post_id == 0 )
 			return false;
 		
@@ -277,6 +279,11 @@ class IPU_Admin {
 		return $form_fields;
 	}
 
+	/*
+	 * Check if the Issuu API Key and Secret Key are entered
+	 * @return true | false
+	 * @author Benjamin Niess
+	 */
 	function hasApiKeys(){
 		global $ipu_options;
 		
@@ -287,11 +294,12 @@ class IPU_Admin {
 	}
 
 	/**
-	 * Format the html inserted when the Audio Player button is used
+	 * Format the html inserted when the PDF button is used
 	 * @param $html String
-	 * @return String 
+	 * @return String The pdf url
+	 * @author Benjamin Niess
 	 */
-	function sendToEditor($html) {
+	function sendToEditor( $html ) {
 		if( preg_match( '|\[pdf (.*?)\]|i', $html, $matches ) ) {
 			if ( isset($matches[0]) ) {
 				$html = $matches[0];
@@ -302,15 +310,24 @@ class IPU_Admin {
 	
 	/*
 	 * Check if an action is set on the $_GET var and call the PHP function corresponding 
+	 * @return true | false
 	 * @author Benjamin Niess
 	 */
 	function checkJsPdfEdition(){
+
 		if ( !isset( $_GET['attachment_id'] ) || (int)$_GET['attachment_id'] == 0 || !isset( $_GET['action'] ) || empty( $_GET['action'] ) )
 			return false;
 		
 		if ( $_GET['action'] == 'send_pdf' ){
+			//check if the nonce is correct
+			check_admin_referer( 'issuu_send_' . $_GET['attachment_id'] );
+			
 			die( $this->sendPDFToIssuu( $_GET['attachment_id'] ) );
 		} elseif ( $_GET['action'] == 'delete_pdf' ){
+			
+			//check if the nonce is correct
+			check_admin_referer( 'issuu_delete_' . $_GET['attachment_id'] );
+			
 			die( $this->deletePDFFromIssuu( $_GET['attachment_id'] ) );
 		}
 	}
@@ -349,7 +366,7 @@ class IPU_Admin {
 				jQuery('#admin_send_pdf a').click(function( e ) {
 					jQuery('#admin_send_pdf').html('<?php _e( 'Loading', 'ipu' ); ?>...');
 					jQuery('#admin_send_pdf').css( 'color', '#000000');
-					jQuery.get('<?php echo admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&action=send_pdf' ); ?>', function(data) {
+					jQuery.get('<?php echo str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&amp;action=send_pdf' ), 'issuu_send_' . $_GET['attachment_id'] ) ); ?>', function(data) {
 						
 						if ( data == false ){
 							jQuery('#admin_send_pdf').html('<?php _e( 'An error occured during synchronisation with Issuu', 'ipu' ); ?>');
@@ -368,7 +385,7 @@ class IPU_Admin {
 				jQuery('#admin_delete_pdf a').click(function( e ) {
 					jQuery('#admin_delete_pdf').html('<?php _e( 'Loading', 'ipu' ); ?>...');
 					jQuery('#admin_delete_pdf').css( 'color', '#000000');
-					jQuery.get('<?php echo admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&action=delete_pdf' ); ?>', function(data) {
+					jQuery.get('<?php echo str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&amp;action=delete_pdf' ), 'issuu_delete_' . $_GET['attachment_id'] ) ); ?>', function(data) {
 						
 						if ( data == true ){
 							jQuery('#admin_delete_pdf').html('<?php _e( 'Your PDF has been successfuly deleted', 'ipu' ); ?>');
@@ -381,7 +398,6 @@ class IPU_Admin {
 					e.preventDefault();
 					
 				});
-
 			});
 		</script>
 		<?php
