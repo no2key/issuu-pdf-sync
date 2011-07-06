@@ -19,7 +19,12 @@ function issuu_pdf_embeder( $atts, $content = null ) {
 		'autoFlip' => ( isset( $ipu_options['autoflip'] ) && $ipu_options['autoflip'] == 1 ) ? 'true' : 'false', 
 		'showFlipBtn' => ( isset( $ipu_options['show_flip_buttons'] ) && $ipu_options['show_flip_buttons'] == 1 ) ? 'true' : 'false', 
 		'allowfullscreen' => ( isset( $ipu_options['allow_full_screen'] ) && $ipu_options['allow_full_screen'] == 1 ) ? 'true' : 'false' ),
-		$atts ) ); ?>
+		$atts ) ); 
+	
+	// Check if the required param is set
+	if ( empty( $issuu_pdf_id ))
+		return false;	
+	?>
 	
 	<div>
 		<object style="width:<?php echo $width; ?>px;height:<?php echo $height; ?>px" >

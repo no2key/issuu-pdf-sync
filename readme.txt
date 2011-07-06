@@ -25,3 +25,4 @@ Stable tag: 1.0
 - synchro sur la vue liste medias
 - ajout bouton sur tinymce pour générer shortcode
 - ajout de propres thème par fichiers xml
+- color picker

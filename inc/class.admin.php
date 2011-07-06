@@ -129,7 +129,64 @@ class IPS_Admin {
 					
 					<tr><td colspan="2"><h3><?php _e('How to use the shortocde ?', 'ips'); ?></h3></td></tr>
 					
-					<tr><td colspan="2"><p>blablablablc ukhg uyjguyj g ufgyjht fhtgh fdhtrdf ht rd htr dh tdfht rd ht d htdfhtdht  trd htrdfh trd trg</p></td></tr>
+					<tr><td colspan="2">
+						<p>1\ Click to the media button, choose a PDF document and click on the Issuu PDF button to insert the basic shortcode</p>
+						<p>2\ If you want to add params for a specific PDF, you can follow these examples :</p>
+						
+						<p><code>[pdf issuu_pdf_id="id_of_you_PDF" width="500" height="300"]</code></p>
+						<p class="description">In this example, we want to specify a width an a height only for this PDF</p>
+						
+						<p><code>[pdf issuu_pdf_id="id_of_you_PDF" layout="browsing" autoFlip="true" autoFlipTime="4000"]</code></p>
+						<p class="description">In this other example, we want to specify the browsing layout (one page presentation) and we want the PDF pages to autoflip each 4 seconds</p>
+					</td></tr>
+					
+					<tr><td colspan="2"><h3><?php _e('Which params can be used with the shortcode ?', 'ips'); ?></h3></td></tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">issuu_pdf_id</span></label></th>
+						<td><p class="description"><?php _e('The ISSUU PDF ID', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">width</span></label></th>
+						<td><p class="description"><?php _e('The width of the animation in pixels', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">height</span></label></th>
+						<td><p class="description"><?php _e('The height of the animation in pixels', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">layout</span></label></th>
+						<td><p class="description"><?php _e('The layout of the animation. Possible values : "<strong>presentation</strong>" (double page), "<strong>browsing</strong>" (single page)', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">backgroundColor</span></label></th>
+						<td><p class="description"><?php _e('The background color - In hexadecimal format - without "#" ', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">autoFlip</span></label></th>
+						<td><p class="description"><?php _e('Enable or disable the Auto Flip feature. Possible values : "true", "false"', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">autoFlipTime</span></label></th>
+						<td><p class="description"><?php _e('The timelaps for the page flipe in milliseconds', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">showFlipBtn</span></label></th>
+						<td><p class="description"><?php _e('Allways show the right left flip buttons. Possible values : "true", "false"', 'ips'); ?></p></td>
+					</tr>
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft">allowfullscreen</span></label></th>
+						<td><p class="description"><?php _e('Allow the full screen mode (if not, open in a new window). Possible values : "true", "false"', 'ips'); ?></p></td>
+					</tr>
+					
 					
 				</table>
 				
@@ -396,14 +453,12 @@ class IPS_Admin {
 							jQuery('#admin_send_pdf').css( 'color', '#00AA00');
 						};
 					});
-					
-					
 				});
 				
 				// Deleting PDF
 				jQuery('#admin_delete_pdf a').click(function( e ) {
 					e.preventDefault();
-					if( !window.confirm( '<?php esc_attr_e( 'Are you sure you want to delete this PDF from Issuu ?', 'ips' ); ?>' ) ){ 
+					if( !window.confirm( '<?php echo esc_js( __('Are you sure you want to delete this PDF from Issuu ?', 'ips' ) ); ?>' ) ){ 
 						return false;
 					}
 					jQuery('#admin_delete_pdf').html('<img src="<?php echo admin_url( 'images/wpspin_light.gif' ); ?>" /> <?php esc_attr_e( 'Loading', 'ips' ); ?>...');
@@ -411,15 +466,14 @@ class IPS_Admin {
 					jQuery.get('<?php echo str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&amp;action=delete_pdf' ), 'issuu_delete_' . $_GET['attachment_id'] ) ); ?>', function(data) {
 						
 						if ( data == true ){
-							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'Your PDF has been successfuly deleted', 'ips' ); ?>');
+							jQuery('#admin_delete_pdf').html('<?php echo esc_js( __( 'Your PDF has been successfuly deleted', 'ips' ) ); ?>');
 							jQuery('#admin_delete_pdf').css( 'color', '#00AA00');
 						}else {
-							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'An error occured during PDF deletion', 'ips' ); ?>');
+							jQuery('#admin_delete_pdf').html('<?php echo esc_js( __( 'An error occured during PDF deletion', 'ips' ) ); ?>');
 							jQuery('#admin_delete_pdf').css( 'color', '#AA0000');
 						};
 					});
 					e.preventDefault();
-					
 				});
 			});
 		</script>
