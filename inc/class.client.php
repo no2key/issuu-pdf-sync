@@ -1,5 +1,5 @@
 <?php
-class IPU_Client {
+class IPS_Client {
 	
 	/**
 	 * Constructor PHP4 like
@@ -7,7 +7,7 @@ class IPU_Client {
 	 * @return void
 	 * @author Benjamin Niess
 	 */
-	function IPU_Client() {
+	function IPS_Client() {
 
 	}
 	

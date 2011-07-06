@@ -21,3 +21,7 @@ Stable tag: 1.0
 	* First release
 
 == Todo ==
+- synchro de tous les PDF  WP  <==> Issuu
+- synchro sur la vue liste medias
+- ajout bouton sur tinymce pour générer shortcode
+- ajout de propres thème par fichiers xml

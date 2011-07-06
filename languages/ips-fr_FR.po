@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Issuu PDF Uploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-05 17:33+0100\n"
-"PO-Revision-Date: 2011-07-05 17:34+0100\n"
+"POT-Creation-Date: 2011-07-06 11:55+0100\n"
+"PO-Revision-Date: 2011-07-06 11:56+0100\n"
 "Last-Translator: Benjamin Niess <bniess@beapi.fr>\n"
 "Language-Team: BeApi <contact@beapi.fr>\n"
 "MIME-Version: 1.0\n"
@@ -36,104 +36,117 @@ msgstr "Configuration Issuu"
 msgid "Issuu API Key"
 msgstr "Clé API Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:65
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:67
 msgid "Get an Issuu API Key"
 msgstr "Obtenir une clé API Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:69
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:71
 msgid "Issuu private key"
 msgstr "Clé privée Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:74
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:76
 msgid "Automatically upload PDFs to Issuu"
 msgstr "Uploader automatiquement les PDF de la bibliothèque sur Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:78
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:80
 msgid "Default embed code configuration"
 msgstr "Configuration par défaut des codes embed"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:81
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:83
 msgid "Layout"
 msgstr "Modèle"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:83
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:85
 msgid "Two up"
 msgstr "Double page"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:84
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:86
 msgid "Single page"
-msgstr "Simple page"
+msgstr "Page simple"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:89
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:91
 msgid "Width"
 msgstr "Largeur"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:94
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:96
 msgid "Height"
 msgstr "Hauteur"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:99
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:101
 msgid "Background color"
 msgstr "Couleur d'arrière plan"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:104
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:106
 msgid "Allow full screen"
 msgstr "Autoriser le plein écran"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:109
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:111
 msgid "Always show flip buttons"
 msgstr "Toujours afficher les boutons de navigaton"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:114
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:116
 msgid "Auto flip (every 6 seconds)"
 msgstr "Défilement automatique (toutes les 6 secondes)"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:123
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:125
 msgid "Save Changes"
 msgstr "Enregistrer les modifications"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:273
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:275
 msgid "Issuu PDF"
 msgstr "PDF Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:357
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:359
 msgid "Issuu status"
 msgstr "Status du PDF"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:359
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:361
 msgid "This PDF is already synchronised on Issuu"
 msgstr "Ce PDF est déjà synchronisé sur Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:359
-msgid "> Click here to delete this PDF from Issuu"
-msgstr "> Cliquez-ici pour supprimer ce PDF des serveurs d'Issuu"
-
 #: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:361
+msgid "Click here to delete this PDF from Issuu"
+msgstr "Cliquez-ici pour supprimer ce PDF des serveurs d'Issuu"
+
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:363
 msgid "This PDF is not synchronised on Issuu"
 msgstr "Ce PDF n'est pas synchronisé sur Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:361
-msgid "> Click here to send this PDF to Issuu"
-msgstr "> Cliquez-ici pour envoyer ce PDF sur les serveurs d'Issuu"
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:363
+msgid "Click here to send this PDF to Issuu"
+msgstr "Cliquez-ici pour envoyer ce PDF sur les serveurs d'Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:367
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:385
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:370
+msgid "Are you sure you want to send this PDF on Issuu ?"
+msgstr "Cliquez-ici pour envoyer ce PDF sur les serveurs d'Issuu"
+
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:373
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:395
 msgid "Loading"
 msgstr "Chargement"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:372
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:378
 msgid "An error occured during synchronisation with Issuu"
 msgstr "Une erreur est survenue durant la synchrinosation avec Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:375
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:381
 msgid "Your PDF is now on Issuu !"
 msgstr "Votre PDF est désormais sur Issuu !"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:390
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:392
+msgid "Are you sure you want to delete this PDF from Issuu ?"
+msgstr "Cliquez-ici pour supprimer ce PDF des serveurs d'Issuu"
+
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:400
 msgid "Your PDF has been successfuly deleted"
 msgstr "Votre PDF a bien été supprimé des serveurs d'Issuu"
 
-#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:393
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/class.admin.php:403
 msgid "An error occured during PDF deletion"
 msgstr "Une erreur est survenue durant la suppression du PDF"
+
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/shortcodes.php:26
+#: C:\Users\Benjamin\sites\issuu-pdf-uploader/inc/shortcodes.php:29
+msgid "Loading..."
+msgstr "Chargement..."
 

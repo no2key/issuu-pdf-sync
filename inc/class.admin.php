@@ -1,5 +1,5 @@
 <?php
-class IPU_Admin {
+class IPS_Admin {
 	
 	/**
 	 * Constructor PHP4 like
@@ -7,10 +7,10 @@ class IPU_Admin {
 	 * @return void
 	 * @author Benjamin Niess
 	 */
-	function IPU_Admin() {
+	function IPS_Admin() {
 		global $pagenow;
 		
-		add_filter("attachment_fields_to_edit", array(&$this, "insertIPUButton"), 10, 2);
+		add_filter("attachment_fields_to_edit", array(&$this, "insertIPSButton"), 10, 2);
 		add_filter("media_send_to_editor", array(&$this, "sendToEditor"));
 		
 		if ( $pagenow == "media.php" )
@@ -23,7 +23,7 @@ class IPU_Admin {
 	
 	
 	function addPluginMenu() {
-		add_options_page( __('Options for Issuu PDF Uploader', 'ipu'), __('Issuu PDF Uploader', 'ipu'), 'manage_options', 'ipu-options', array( &$this, 'displayOptions' ) );
+		add_options_page( __('Options for Issuu PDF Sync', 'ips'), __('Issuu PDF Sync', 'ips'), 'manage_options', 'ips-options', array( &$this, 'displayOptions' ) );
 	}
 	
 	/**
@@ -37,90 +37,104 @@ class IPU_Admin {
 			$new_options = array();
 			
 			// Update existing
-			foreach( (array) $_POST['ipu'] as $key => $value ) {
+			foreach( (array) $_POST['ips'] as $key => $value ) {
 				$new_options[$key] = stripslashes($value);
 			}
 			
-			update_option( 'ipu_options', $new_options );
+			update_option( 'ips_options', $new_options );
 		}
 		
 		if (isset($_POST['save']) ) {
-			echo '<div class="message updated"><p>'.__('Options updated!', 'ipu').'</p></div>';
+			echo '<div class="message updated"><p>'.__('Options updated!', 'ips').'</p></div>';
 		}
 		
-		$fields = get_option('ipu_options');
+		$fields = get_option('ips_options');
 		if ( $fields == false ) {
 			$fields = array();
 		}
 		?>
-		<div class="wrap" id="ipu_options">
-			<h2><?php _e('Issuu PDF Uploader', 'ipu'); ?></h2>
+		<div class="wrap" id="ips_options">
+			<h2><?php _e('Issuu PDF Sync', 'ips'); ?></h2>
 			
 			<form method="post" action="">
-				<table class="form-table">
+				<table class="form-table describe media-upload-form">
 					
-					<tr><td colspan="2"><h3><?php _e('Issuu configuration', 'ipu'); ?></h3></td></tr> 
+					<tr><td colspan="2"><h3><?php _e('Issuu configuration', 'ips'); ?></h3></td></tr> 
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Issuu API Key', 'ipu'); ?><br /><a href="http://issuu.com/" target="_blank"><?php _e('Get an Issuu API Key', 'ipu'); ?></a></th>
-						<td><input type="text" name="ipu[issuu_api_key]" value="<?php echo isset( $fields['issuu_api_key'] ) ? $fields['issuu_api_key'] : '' ; ?>" /></td>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Issuu API Key', 'ips'); ?>
+							<br /><a href="http://issuu.com/" target="_blank"><?php _e('Get an Issuu API Key', 'ips'); ?></span>
+						</label></th>
+						<td><input type="text" class="text" name="ips[issuu_api_key]" value="<?php echo isset( $fields['issuu_api_key'] ) ? $fields['issuu_api_key'] : '' ; ?>" /></a>
+						</td>
 					</tr>
-					<tr valign="top">
-						<th scope="row"><?php _e('Issuu private key', 'ipu'); ?></th>
-						<td><input type="text" name="ipu[issuu_secret_key]" value="<?php echo isset( $fields['issuu_secret_key'] ) ? $fields['issuu_secret_key'] : ''; ?>" /></td>
-					</tr>
-					
-					<tr valign="top">
-						<th scope="row"><?php _e('Automatically upload PDFs to Issuu', 'ipu'); ?></th>
-						<td><input type="checkbox" <?php checked( isset( $fields['auto_upload'] ) ? $fields['auto_upload'] : '' , 1 ); ?> name="ipu[auto_upload]" value="1" /></td>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Issuu private key', 'ips'); ?></span></label></th>
+						<td><input type="text" name="ips[issuu_secret_key]" value="<?php echo isset( $fields['issuu_secret_key'] ) ? $fields['issuu_secret_key'] : ''; ?>" /></td>
 					</tr>
 					
-					<tr><td colspan="2"><h3><?php _e('Default embed code configuration', 'ipu'); ?></h3></td></tr> 
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Automatically upload PDFs to Issuu', 'ips'); ?></span></label></th>
+						<td><input type="checkbox" <?php checked( isset( $fields['auto_upload'] ) ? $fields['auto_upload'] : '' , 1 ); ?> name="ips[auto_upload]" value="1" /></td>
+					</tr>
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Layout', 'ipu'); ?></th>
+					<tr><td colspan="2"><h3><?php _e('Default embed code configuration', 'ips'); ?></h3></td></tr> 
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Layout', 'ips'); ?></span></label></th>
 						<td>
-							<input type="radio" name="ipu[layout]" value="1" <?php checked( isset( $fields['layout'] ) ? $fields['layout'] : 0 , 1 ); ?> /> <?php _e('Two up', 'ipu'); ?>
-							<input type="radio" name="ipu[layout]" value="2" <?php checked( isset( $fields['layout'] ) ? $fields['layout'] : 0 , 2 ); ?> /> <?php _e('Single page', 'ipu'); ?>
+							<input type="radio" name="ips[layout]" value="1" <?php checked( isset( $fields['layout'] ) ? $fields['layout'] : 0 , 1 ); ?> /> <?php _e('Two up', 'ips'); ?><img src="<?php echo IPS_URL . '/images/layout-double-pages.png' ; ?>" height="16" /><br />
+							<input type="radio" name="ips[layout]" value="2" <?php checked( isset( $fields['layout'] ) ? $fields['layout'] : 0 , 2 ); ?> /> <?php _e('Single page', 'ips'); ?><img src="<?php echo IPS_URL . '/images/layout-single-page.png' ; ?>" height="16" /><br />
 						</td>
 					</tr>
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Width', 'ipu'); ?></th>
-						<td><input type="text" name="ipu[width]" value="<?php echo isset(  $fields['width'] ) ? $fields['width'] : ''; ?>" /></td>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Width', 'ips'); ?></span></label></th>
+						<td><input type="number" min="0" max="2000" name="ips[width]" value="<?php echo isset(  $fields['width'] ) ? (int)$fields['width'] : ''; ?>" /></td>
 					</tr>
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Height', 'ipu'); ?></th>
-						<td><input type="text" name="ipu[height]" value="<?php echo isset(  $fields['height'] ) ? $fields['height'] : ''; ?>" /></td>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Height', 'ips'); ?></span></label></th>
+						<td><input type="number" min="0" max="2000" name="ips[height]" value="<?php echo isset(  $fields['height'] ) ? (int)$fields['height'] : ''; ?>" /></td>
 					</tr>
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Background color', 'ipu'); ?></th>
-						<td># <input type="text" name="ipu[bgcolor]" value="<?php echo isset(  $fields['bgcolor'] ) ? $fields['bgcolor'] : ''; ?>" /></td>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Background color', 'ips'); ?></span></label></th>
+						<td># <input style="width:65px;" type="text" maxlength="6" name="ips[bgcolor]" value="<?php echo isset(  $fields['bgcolor'] ) ? $fields['bgcolor'] : ''; ?>" /></td>
 					</tr>
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Allow full screen', 'ipu'); ?></th>
-						<td><input type="checkbox" <?php checked( isset( $fields['allow_full_screen'] ) ? $fields['allow_full_screen'] : '' , 1 ); ?> name="ipu[allow_full_screen]" value="1" /></td>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Allow full screen', 'ips'); ?></span></label></th>
+						<td><input type="checkbox" <?php checked( isset( $fields['allow_full_screen'] ) ? $fields['allow_full_screen'] : '' , 1 ); ?> name="ips[allow_full_screen]" value="1" /></td>
 					</tr>
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Always show flip buttons', 'ipu'); ?></th>
-						<td><input type="checkbox" <?php checked( isset( $fields['show_flip_buttons'] ) ? $fields['show_flip_buttons'] : '' , 1 ); ?> name="ipu[show_flip_buttons]" value="1" /></td>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Always show flip buttons', 'ips'); ?></span></label></th>
+						<td><input type="checkbox" <?php checked( isset( $fields['show_flip_buttons'] ) ? $fields['show_flip_buttons'] : '' , 1 ); ?> name="ips[show_flip_buttons]" value="1" /></td>
 					</tr>
 					
-					<tr valign="top">
-						<th scope="row"><?php _e('Auto flip (every 6 seconds)', 'ipu'); ?></th>
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Auto flip', 'ips'); ?></span></label></th>
 						<td>
-							<input type="checkbox" name="ipu[autoflip]" value="1" <?php checked( isset( $fields['autoflip'] ) ? $fields['autoflip'] : 0 , 1 ); ?> />
+							<input type="checkbox" name="ips[autoflip]" value="1" <?php checked( isset( $fields['autoflip'] ) ? $fields['autoflip'] : 0 , 1 ); ?> />
+						</td>
+					</tr>  
+					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label><span class="alignleft"><?php _e('Flip time laps', 'ips'); ?></span></label></th>
+						<td><input type="number" step="100" min="1000" max="200000" name="ips[flip_timelaps]" value="<?php echo isset(  $fields['flip_timelaps'] ) ? (int)$fields['flip_timelaps'] : '6000'; ?>" />
+							<p class="description"><?php _e('(in miliseconds - default : 6000)', 'ips'); ?></p>
 						</td>
 					</tr>
+					
+					<tr><td colspan="2"><h3><?php _e('How to use the shortocde ?', 'ips'); ?></h3></td></tr>
+					
+					<tr><td colspan="2"><p>blablablablc ukhg uyjguyj g ufgyjht fhtgh fdhtrdf ht rd htr dh tdfht rd ht d htdfhtdht  trd htrdfh trd trg</p></td></tr>
 					
 				</table>
 				
 				<p class="submit">
-					<input type="submit" name="save" class="button-primary" value="<?php _e('Save Changes', 'ipu') ?>" />
+					<input type="submit" name="save" class="button-primary" value="<?php _e('Save Changes', 'ips') ?>" />
 				</p>
 			</form>
 		</div>
@@ -135,7 +149,7 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function sendPDFToIssuu( $post_id = 0 ){
-		global $ipu_options;
+		global $ips_options;
 		
 		if ( (int)$post_id == 0 )
 			return false;
@@ -151,10 +165,10 @@ class IPU_Admin {
 			return false;
 		
 		// Prepare the MD5 signature for the Issuu Webservice
-		$md5_signature = md5( $ipu_options['issuu_secret_key'] . "actionissuu.document.url_uploadapiKey" . $ipu_options['issuu_api_key'] . "formatjsonslurpUrl" . $post_data->guid . "title" . sanitize_title( $post_data->post_title ) );
+		$md5_signature = md5( $ips_options['issuu_secret_key'] . "actionissuu.document.url_uploadapiKey" . $ips_options['issuu_api_key'] . "formatjsonslurpUrl" . $post_data->guid . "title" . sanitize_title( $post_data->post_title ) );
 		
 		// Call the Webservice
-		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . $ipu_options['issuu_api_key'] . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . sanitize_title( $post_data->post_title ) . "&signature=" . $md5_signature; 
+		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . $ips_options['issuu_api_key'] . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . sanitize_title( $post_data->post_title ) . "&signature=" . $md5_signature; 
 		
 		// Cath the response
 		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
@@ -194,7 +208,7 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function deletePDFFromIssuu( $post_id = 0 ){
-		global $ipu_options;
+		global $ips_options;
 		
 		if ( (int)$post_id == 0 )
 			return false;
@@ -211,10 +225,10 @@ class IPU_Admin {
 			return false;
 		
 		// Prepare the MD5 signature for the Issuu Webservice
-		$md5_signature = md5( $ipu_options['issuu_secret_key'] . "actionissuu.document.deleteapiKey" . $ipu_options['issuu_api_key'] . "formatjsonnames" . $issuu_pdf_name );
+		$md5_signature = md5( $ips_options['issuu_secret_key'] . "actionissuu.document.deleteapiKey" . $ips_options['issuu_api_key'] . "formatjsonnames" . $issuu_pdf_name );
 		
 		// Call the Webservice
-		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.delete&apiKey=" . $ipu_options['issuu_api_key'] . "&format=json&names=" . $issuu_pdf_name . "&signature=" . $md5_signature; 
+		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.delete&apiKey=" . $ips_options['issuu_api_key'] . "&format=json&names=" . $issuu_pdf_name . "&signature=" . $md5_signature; 
 		
 		// Cath the response
 		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
@@ -242,13 +256,13 @@ class IPU_Admin {
 	}
 
 	/**
-	 * Inserts Issuu PDF Uploader button into media library popup
+	 * Inserts Issuu PDF Sync button into media library popup
 	 * @return the amended form_fields structure
 	 * @param $form_fields Object
 	 * @param $post Object
 	 */
-	function insertIPUButton( $form_fields, $post ) {
-		global $wp_version, $ipu_options;
+	function insertIPSButton( $form_fields, $post ) {
+		global $wp_version, $ips_options;
 		
 		if ( !isset( $form_fields ) || empty( $form_fields ) || !isset( $post ) || empty( $post ) )
 			return $form_fields;
@@ -264,13 +278,13 @@ class IPU_Admin {
 		$disable_auto_upload = get_post_meta( $post->ID, 'disable_auto_upload', true );
 		
 		// Upload the PDF to Issuu if necessary and if the Auto upload feature is enabled
-		if ( empty( $issuu_pdf_id ) && isset( $ipu_options['auto_upload'] ) && $ipu_options['auto_upload'] == 1 && $disable_auto_upload != 1)
+		if ( empty( $issuu_pdf_id ) && isset( $ips_options['auto_upload'] ) && $ips_options['auto_upload'] == 1 && $disable_auto_upload != 1)
 			$issuu_pdf_id = $this->sendPDFToIssuu( $post->ID );
 		
 		if ( empty( $issuu_pdf_id ) )
 			return $form_fields;
 		
-		$form_fields["url"]["html"] .= "<button type='button' class='button urlissuupdfuploader issuu-pdf-" . $issuu_pdf_id . "' value='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]' title='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]'>" . _( 'Issuu PDF' ) . "</button>";
+		$form_fields["url"]["html"] .= "<button type='button' class='button urlissuupdfsync issuu-pdf-" . $issuu_pdf_id . "' value='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]' title='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]'>" . _( 'Issuu PDF' ) . "</button>";
 		
 		$form_fields["url"]["html"] .= "<script type='text/javascript'>
 		jQuery('issuu-pdf-" . $issuu_pdf_id . "').bind('click', function(){jQuery(this).siblings('input').val(this.value);});
@@ -285,9 +299,9 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function hasApiKeys(){
-		global $ipu_options;
+		global $ips_options;
 		
-		if ( !isset( $ipu_options['issuu_api_key'] ) || empty( $ipu_options['issuu_api_key'] ) || !isset( $ipu_options['issuu_secret_key'] ) || empty( $ipu_options['issuu_secret_key'] ) )
+		if ( !isset( $ips_options['issuu_api_key'] ) || empty( $ips_options['issuu_api_key'] ) || !isset( $ips_options['issuu_secret_key'] ) || empty( $ips_options['issuu_secret_key'] ) )
 			return false;
 		
 		return true;
@@ -337,7 +351,9 @@ class IPU_Admin {
 	 * @author Benjamin Niess
 	 */
 	function editMediaJs(){
-		if ( !isset( $_GET['attachment_id'] ) || (int)$_GET['attachment_id'] <= 0 )
+		global $ips_options;
+		
+		if ( !isset( $_GET['attachment_id'] ) || (int)$_GET['attachment_id'] <= 0 || !isset( $ips_options['issuu_api_key'] ) || empty( $ips_options['issuu_api_key'] ) || !isset( $ips_options['issuu_secret_key'] ) || empty( $ips_options['issuu_secret_key'] ) )
 			return false;
 			
 		// Get attachment infos
@@ -354,43 +370,51 @@ class IPU_Admin {
 		<script type="text/javascript">
 			jQuery(function() {
 				
-				jQuery('#media-single-form .slidetoggle tbody tr').last().after('<tr class="reload_pdf"><th valign="top" scope="row" class="label"><label><span class="alignleft"><?php esc_attr_e( 'Issuu status', 'ipu' ); ?></span><br class="clear"></label></th><td class="field"><?php 
+				jQuery('#media-single-form .slidetoggle tbody tr').last().after('<tr class="reload_pdf"><th valign="top" scope="row" class="label"><label><span class="alignleft"><?php esc_attr_e( 'Issuu status', 'ips' ); ?></span><br class="clear"></label></th><td class="field"><?php 
 					if ( !empty( $issuu_pdf_id ) ) : 
-						?><p style="color:#00AA00;" id="admin_delete_pdf"><?php esc_attr_e( 'This PDF is already synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php esc_attr_e( '> Click here to delete this PDF from Issuu', 'ipu' ); ?></a></p><?php 
+						?><p style="color:#00AA00;" id="admin_delete_pdf"><?php esc_attr_e( 'This PDF is already synchronised on Issuu', 'ips' ); ?> <br /><span class="trash"><a href="#" style="color:#BC0B0B;"><?php esc_attr_e( 'Click here to delete this PDF from Issuu', 'ips' ); ?></a></span></p><?php 
 					else : 
-						?><p style="color:#AA0000;" id="admin_send_pdf"><?php esc_attr_e( 'This PDF is not synchronised on Issuu', 'ipu' ); ?> <br /><a href=""><?php esc_attr_e( '> Click here to send this PDF to Issuu', 'ipu' ); ?></a></p><?php 
+						?><p style="color:#AA0000;" id="admin_send_pdf"><?php esc_attr_e( 'This PDF is not synchronised on Issuu', 'ips' ); ?> <br /><a href="#"><?php esc_attr_e( 'Click here to send this PDF to Issuu', 'ips' ); ?></a></p><?php 
 					endif; 
 				?></td></tr>');
 				
 				// Sending PDF
 				jQuery('#admin_send_pdf a').click(function( e ) {
-					jQuery('#admin_send_pdf').html('<?php _e( 'Loading', 'ipu' ); ?>...');
+					e.preventDefault();
+					if( !window.confirm( '<?php echo esc_js( __( 'Are you sure you want to send this PDF on Issuu ?', 'ips' ) ); ?>' ) ){ 
+						return false;
+					}
+					jQuery('#admin_send_pdf').html('<img src="<?php echo admin_url( 'images/wpspin_light.gif' ); ?>" /> <?php _e( 'Loading', 'ips' ); ?>...');
 					jQuery('#admin_send_pdf').css( 'color', '#000000');
 					jQuery.get('<?php echo str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&amp;action=send_pdf' ), 'issuu_send_' . $_GET['attachment_id'] ) ); ?>', function(data) {
 						
 						if ( data == false ){
-							jQuery('#admin_send_pdf').html('<?php esc_attr_e( 'An error occured during synchronisation with Issuu', 'ipu' ); ?>');
+							jQuery('#admin_send_pdf').html('<?php echo esc_js( __( 'An error occured during synchronisation with Issuu', 'ips' ) ); ?>');
 							jQuery('#admin_send_pdf').css( 'color', '#AA0000');
 						}else {
-							jQuery('#admin_send_pdf').html('<?php esc_attr_e( 'Your PDF is now on Issuu !', 'ipu' ); ?>');
+							jQuery('#admin_send_pdf').html('<?php echo esc_js( __( 'Your PDF is now on Issuu !', 'ips' ) ); ?>');
 							jQuery('#admin_send_pdf').css( 'color', '#00AA00');
 						};
 					});
-					e.preventDefault();
+					
 					
 				});
 				
 				// Deleting PDF
 				jQuery('#admin_delete_pdf a').click(function( e ) {
-					jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'Loading', 'ipu' ); ?>...');
+					e.preventDefault();
+					if( !window.confirm( '<?php esc_attr_e( 'Are you sure you want to delete this PDF from Issuu ?', 'ips' ); ?>' ) ){ 
+						return false;
+					}
+					jQuery('#admin_delete_pdf').html('<img src="<?php echo admin_url( 'images/wpspin_light.gif' ); ?>" /> <?php esc_attr_e( 'Loading', 'ips' ); ?>...');
 					jQuery('#admin_delete_pdf').css( 'color', '#000000');
 					jQuery.get('<?php echo str_replace( '&amp;', '&', wp_nonce_url( admin_url( 'media.php?attachment_id=' . $_GET['attachment_id'] . '&amp;action=delete_pdf' ), 'issuu_delete_' . $_GET['attachment_id'] ) ); ?>', function(data) {
 						
 						if ( data == true ){
-							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'Your PDF has been successfuly deleted', 'ipu' ); ?>');
+							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'Your PDF has been successfuly deleted', 'ips' ); ?>');
 							jQuery('#admin_delete_pdf').css( 'color', '#00AA00');
 						}else {
-							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'An error occured during PDF deletion', 'ipu' ); ?>');
+							jQuery('#admin_delete_pdf').html('<?php esc_attr_e( 'An error occured during PDF deletion', 'ips' ); ?>');
 							jQuery('#admin_delete_pdf').css( 'color', '#AA0000');
 						};
 					});
